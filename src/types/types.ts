@@ -20,11 +20,20 @@ export type UserDTO = {
   birthDate: string;
 };
 
-export type Column<T> = {
+export type DataColumn<T> = {
   key: keyof T;
   title: string;
   render?: (value: T[keyof T], row: T) => ReactNode;
 };
+
+export type ActionColumn<T> = {
+  key: "actions";
+  title: string;
+  type: "actions";
+  render: (_: unknown, row: T) => ReactNode;
+};
+
+export type Column<T> = DataColumn<T> | ActionColumn<T>;
 
 export type DataTableProps<T extends { id: number | string }> = {
   data: T[];

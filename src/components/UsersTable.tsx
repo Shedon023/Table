@@ -33,15 +33,7 @@ export function UsersTable<T extends { id: number | string }>({
             </Table.Td>
           </Table.Tr>
         ) : (
-          data.map((row) => (
-            <Table.Tr key={row.id}>
-              {columns.map((col) => (
-                <Table.Td key={String(col.key)}>
-                  {col.render ? col.render(row[col.key], row) : String(row[col.key])}
-                </Table.Td>
-              ))}
-            </Table.Tr>
-          ))
+          data.map((row) => <Table.Tr key={row.id}></Table.Tr>)
         )}
       </Table.Tbody>
     </Table>
