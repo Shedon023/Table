@@ -15,7 +15,9 @@ export const useGetUsers = (initialPage = 1, limit = 10) => {
         setIsLoading(true);
 
         const skip = (page - 1) * limit;
-        const res = await fetch(`https://dummyjson.com/users?limit=${limit}&skip=${skip}`);
+        const res = await fetch(`https://dummyjson.com/users?limit=${limit}&skip=${skip}`, {
+          cache: "no-store",
+        });
         if (!res.ok) {
           throw new Error("Failed fetch users");
         }
