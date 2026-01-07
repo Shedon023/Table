@@ -23,6 +23,9 @@ export const useGetUsers = (initialPage = 1, limit = 10) => {
         }
         const data: UsersResponse = await res.json();
 
+        console.log("API RESPONSE:", data);
+        console.log("USERS:", data.users);
+
         setUsers(data.users);
 
         setTotal(data.total);

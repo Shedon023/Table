@@ -33,7 +33,19 @@ export function UsersTable<T extends { id: number | string }>({
             </Table.Td>
           </Table.Tr>
         ) : (
-          data.map((row) => <Table.Tr key={row.id}></Table.Tr>)
+          data.map((row) => (
+            <Table.Tr key={row.id}>
+              {columns.map((col) => {
+                if (col.type === "actions") {
+                  return <Table.Td key='actions'>{col.render(null, row)}</Table.Td>;
+                }
+
+                const value = row[col.key];
+
+                return <Table.Td key={String(col.key)}>{col.render ? col.render(value, row) : String(value)}</Table.Td>;
+              })}
+            </Table.Tr>
+          ))
         )}
       </Table.Tbody>
     </Table>

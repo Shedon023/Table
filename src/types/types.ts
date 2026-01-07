@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import type { Control, FieldValues, Path } from "react-hook-form";
 
 export type UsersResponse = {
@@ -23,14 +22,15 @@ export type UserDTO = {
 export type DataColumn<T> = {
   key: keyof T;
   title: string;
-  render?: (value: T[keyof T], row: T) => ReactNode;
+  render?: (value: T[keyof T], row: T) => React.ReactNode;
+  type?: undefined; // обязательно, чтобы TS различал
 };
 
 export type ActionColumn<T> = {
   key: "actions";
   title: string;
   type: "actions";
-  render: (_: unknown, row: T) => ReactNode;
+  render: (_: null, row: T) => React.ReactNode;
 };
 
 export type Column<T> = DataColumn<T> | ActionColumn<T>;
