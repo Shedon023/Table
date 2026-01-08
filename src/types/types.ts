@@ -23,7 +23,7 @@ export type DataColumn<T> = {
   key: keyof T;
   title: string;
   render?: (value: T[keyof T], row: T) => React.ReactNode;
-  type?: undefined; // обязательно, чтобы TS различал
+  type?: undefined;
 };
 
 export type ActionColumn<T> = {

@@ -9,7 +9,7 @@ export const userSchema = z
     gender: z.enum(["male", "female"]).optional(),
     username: z.string().min(1, "Required"),
     password: z.string().min(6, "Min 6 chars"),
-    birthDate: z.string().optional(),
+    birthDate: z.date().nullable().optional(),
   })
   .refine((data) => data.username.toLowerCase().includes(data.firstName.toLowerCase()), {
     path: ["username"],

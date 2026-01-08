@@ -17,8 +17,8 @@ export function DatePickerField<T extends FieldValues>({
     <DatePickerInput
       {...props}
       label={label}
-      value={value ? new Date(value) : null}
-      onChange={(date) => onChange(date ? date.toString() : "")}
+      value={value ?? null}
+      onChange={onChange}
       valueFormat='DD/MM/YYYY'
       error={error?.message}
     />

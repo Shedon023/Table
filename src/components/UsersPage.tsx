@@ -34,7 +34,7 @@ export function UsersPage() {
       gender: "male",
       username: "",
       password: "",
-      birthDate: "",
+      birthDate: null,
     },
   });
 
@@ -53,7 +53,7 @@ export function UsersPage() {
         gender: fullUser.gender as "male" | "female",
         username: fullUser.username,
         password: fullUser.password,
-        birthDate: fullUser.birthDate,
+        birthDate: new Date(fullUser.birthDate),
       });
     } catch (e) {
       console.error(e);
@@ -63,11 +63,16 @@ export function UsersPage() {
   const onSubmit = async (formData: UserFormValues) => {
     if (!editingUser) return;
 
+    const payload = {
+      ...formData,
+      birthDate: formData.birthDate ? formData.birthDate.toISOString().split("T")[0] : undefined,
+    };
+
     try {
       const res = await fetch(`https://dummyjson.com/users/${editingUser.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) throw new Error("Failed to update user");
@@ -92,7 +97,14 @@ export function UsersPage() {
     { key: "gender", title: "Gender" },
     { key: "username", title: "Username" },
     { key: "password", title: "Password" },
-    { key: "birthDate", title: "Birth date" },
+    {
+      key: "birthDate",
+      title: "Birth date",
+      render: (_value, row) => {
+        const date = new Date(row.birthDate);
+        return date.toLocaleDateString("ru-RU");
+      },
+    },
     {
       type: "actions",
       key: "actions",
