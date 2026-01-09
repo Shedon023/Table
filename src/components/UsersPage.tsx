@@ -141,7 +141,9 @@ export function UsersPage() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", margin: 50, gap: 30 }}>
-      <UsersTable data={data} columns={columns} isLoading={isLoading} />
+      <div style={{ height: 500 }}>
+        <UsersTable data={data} columns={columns} isLoading={isLoading} />
+      </div>
 
       {totalPages > 1 && (
         <Pagination
