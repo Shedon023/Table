@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Pagination, Button } from "@mantine/core";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,6 +35,7 @@ export function UsersPage() {
     },
   });
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleEditClick = async (user: UserDTO) => {
     try {
       setModalOpened(true);
@@ -102,34 +103,37 @@ export function UsersPage() {
     }
   };
 
-  const columns: Column<UserDTO>[] = [
-    { key: "id", title: "ID" },
-    { key: "firstName", title: "First name" },
-    { key: "lastName", title: "Last name" },
-    { key: "maidenName", title: "Maiden name" },
-    { key: "age", title: "Age" },
-    { key: "gender", title: "Gender" },
-    { key: "username", title: "Username" },
-    { key: "password", title: "Password" },
-    {
-      key: "birthDate",
-      title: "Birth date",
-      render: (_value, row) => {
-        const date = new Date(row.birthDate);
-        return date.toLocaleDateString("ru-RU");
+  const columns: Column<UserDTO>[] = useMemo(
+    () => [
+      { key: "id", title: "ID" },
+      { key: "firstName", title: "First name" },
+      { key: "lastName", title: "Last name" },
+      { key: "maidenName", title: "Maiden name" },
+      { key: "age", title: "Age" },
+      { key: "gender", title: "Gender" },
+      { key: "username", title: "Username" },
+      { key: "password", title: "Password" },
+      {
+        key: "birthDate",
+        title: "Birth date",
+        render: (_value, row) => {
+          const date = new Date(row.birthDate);
+          return date.toLocaleDateString("ru-RU");
+        },
       },
-    },
-    {
-      type: "actions",
-      key: "actions",
-      title: "Actions",
-      render: (_, row) => (
-        <Button color='grape' size='xs' onClick={() => handleEditClick(row)}>
-          Edit
-        </Button>
-      ),
-    },
-  ];
+      {
+        type: "actions",
+        key: "actions",
+        title: "Actions",
+        render: (_, row) => (
+          <Button color='grape' size='xs' onClick={() => handleEditClick(row)}>
+            Edit
+          </Button>
+        ),
+      },
+    ],
+    [handleEditClick]
+  );
 
   if (isError) return <p>Error!</p>;
 
