@@ -8,36 +8,33 @@ export const useGetUsers = (initialPage = 1, limit = 10) => {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(initialPage);
 
+  const fetchUsers = async () => {
+    try {
+      setIsError(false);
+      setIsLoading(true);
+
+      const skip = (page - 1) * limit;
+      const res = await fetch(`https://dummyjson.com/users?limit=${limit}&skip=${skip}`, {
+        cache: "no-store",
+      });
+      if (!res.ok) throw new Error("Failed fetch users");
+
+      const data: UsersResponse = await res.json();
+
+      setUsers(data.users);
+      setTotal(data.total);
+    } catch (e) {
+      setIsError(true);
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setIsError(false);
-        setIsLoading(true);
-
-        const skip = (page - 1) * limit;
-        const res = await fetch(`https://dummyjson.com/users?limit=${limit}&skip=${skip}`, {
-          cache: "no-store",
-        });
-        if (!res.ok) {
-          throw new Error("Failed fetch users");
-        }
-        const data: UsersResponse = await res.json();
-
-        console.log("API RESPONSE:", data);
-        console.log("USERS:", data.users);
-
-        setUsers(data.users);
-
-        setTotal(data.total);
-      } catch (e) {
-        setIsError(true);
-        console.error(e);
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, limit]);
 
-  return { data: users, isLoading, isError, total, page, setPage, limit, setUsers };
+  return { data: users, isLoading, isError, total, page, setPage, limit, setUsers, refetch: fetchUsers };
 };

@@ -9,11 +9,12 @@ export const userSchema = z
     gender: z.enum(["male", "female"]).optional(),
     username: z.string().min(1, "Required"),
     password: z.string().min(6, "Min 6 chars"),
-    birthDate: z.date().nullable().optional(),
+    birthDate: z.coerce.date().nullable().optional(),
   })
   .refine((data) => data.username.toLowerCase().includes(data.firstName.toLowerCase()), {
     path: ["username"],
     message: "Username must contain first name",
   });
 
-export type UserFormValues = z.infer<typeof userSchema>;
+export type UserFormInput = z.input<typeof userSchema>;
+export type UserFormOutput = z.output<typeof userSchema>;

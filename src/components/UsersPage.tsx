@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Pagination, Modal, Button, Group } from "@mantine/core";
-import { useForm } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UsersTable } from "./UsersTable";
 import type { Column, UserDTO } from "../types/types";
-import { userSchema, type UserFormValues } from "../schema/schema";
+import { userSchema, type UserFormInput, type UserFormOutput } from "../schema/schema";
 import { Text } from "@mantine/core";
 import { useGetUsers } from "../hooks/useGetUsers";
 import { TextInputField } from "../form-fields/TextInputField";
@@ -14,7 +14,7 @@ import { SelectField } from "../form-fields/SelectField";
 import { getUserById } from "../hooks/useGetUserById";
 
 export function UsersPage() {
-  const { data, setUsers, isLoading, isError, limit, page, setPage, total } = useGetUsers(1, 10);
+  const { data, setUsers, isLoading, isError, limit, page, setPage, total, refetch } = useGetUsers(1, 10);
 
   const [editingUser, setEditingUser] = useState<UserDTO | null>(null);
   const [modalOpened, setModalOpened] = useState(false);
@@ -24,7 +24,7 @@ export function UsersPage() {
     handleSubmit,
     reset,
     formState: { isSubmitting },
-  } = useForm<UserFormValues>({
+  } = useForm<UserFormInput>({
     resolver: zodResolver(userSchema),
     defaultValues: {
       firstName: "",
@@ -60,12 +60,14 @@ export function UsersPage() {
     }
   };
 
-  const onSubmit = async (formData: UserFormValues) => {
+  const onSubmit: SubmitHandler<UserFormInput> = async (formData) => {
     if (!editingUser) return;
 
+    const data = formData as UserFormOutput;
+
     const payload = {
-      ...formData,
-      birthDate: formData.birthDate ? formData.birthDate.toISOString().split("T")[0] : undefined,
+      ...data,
+      birthDate: data.birthDate ? data.birthDate.toISOString().split("T")[0] : undefined,
     };
 
     try {
@@ -81,6 +83,7 @@ export function UsersPage() {
 
       setUsers((prev) => prev.map((user) => (user.id === updatedUser.id ? updatedUser : user)));
 
+      await refetch();
       setModalOpened(false);
       setEditingUser(null);
     } catch (e) {
@@ -143,18 +146,18 @@ export function UsersPage() {
           </Text>
         }>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <TextInputField<UserFormValues> name='firstName' label='First name' control={control} />
-          <TextInputField<UserFormValues> name='lastName' label='Last name' control={control} />
-          <TextInputField<UserFormValues> name='maidenName' label='Maiden name' control={control} />
+          <TextInputField<UserFormInput> name='firstName' label='First name' control={control} />
+          <TextInputField<UserFormInput> name='lastName' label='Last name' control={control} />
+          <TextInputField<UserFormInput> name='maidenName' label='Maiden name' control={control} />
 
-          <NumberInputField<UserFormValues> name='age' label='Age' control={control} />
+          <NumberInputField<UserFormInput> name='age' label='Age' control={control} />
 
-          <SelectField<UserFormValues> name='gender' label='Gender' control={control} data={["male", "female"]} />
+          <SelectField<UserFormInput> name='gender' label='Gender' control={control} data={["male", "female"]} />
 
-          <TextInputField<UserFormValues> name='username' label='Username' control={control} />
-          <TextInputField<UserFormValues> name='password' label='Password' control={control} />
+          <TextInputField<UserFormInput> name='username' label='Username' control={control} />
+          <TextInputField<UserFormInput> name='password' label='Password' control={control} />
 
-          <DatePickerField<UserFormValues> name='birthDate' label='Birth date' control={control} />
+          <DatePickerField<UserFormInput> name='birthDate' label='Birth date' control={control} />
 
           <Group mt='md' style={{ justifyContent: "flex-end" }}>
             <Button color='grape' type='submit' loading={isSubmitting}>

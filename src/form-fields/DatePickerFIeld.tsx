@@ -1,6 +1,7 @@
 import { DatePickerInput } from "@mantine/dates";
 import { useController, type FieldValues } from "react-hook-form";
 import type { BaseFieldProps } from "../types/types";
+import "@mantine/dates/styles.css";
 
 export function DatePickerField<T extends FieldValues>({
   name,
