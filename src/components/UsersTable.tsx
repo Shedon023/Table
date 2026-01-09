@@ -8,7 +8,7 @@ export function UsersTable<T extends { id: number | string }>({
   isLoading = false,
 }: DataTableProps<T>) {
   return (
-    <Table>
+    <Table style={{ tableLayout: "fixed", width: "100%" }}>
       <Table.Thead>
         <Table.Tr>
           {columns.map((col) => (
