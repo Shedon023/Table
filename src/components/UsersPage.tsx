@@ -95,9 +95,10 @@ export function UsersPage() {
 
       setUsers((prev) => prev.map((user) => (user.id === updatedUser.id ? updatedUser : user)));
 
-      await refetch();
       setModalOpened(false);
       setEditingUser(null);
+
+      await refetch();
     } catch (e) {
       console.error(e);
     }
