@@ -1,27 +1,24 @@
 import { useState } from "react";
-import { Pagination, Modal, Button, Group } from "@mantine/core";
+import { Pagination, Button } from "@mantine/core";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UsersTable } from "./UsersTable";
 import type { Column, UserDTO } from "../types/types";
 import { userSchema, type UserFormInput, type UserFormOutput } from "../schema/schema";
-import { Text } from "@mantine/core";
 import { useGetUsers } from "../hooks/useGetUsers";
-import { TextInputField } from "../form-fields/TextInputField";
-import { NumberInputField } from "../form-fields/NumberInputField";
-import { DatePickerField } from "../form-fields/DatePickerFIeld";
-import { SelectField } from "../form-fields/SelectField";
 import { getUserById } from "../hooks/useGetUserById";
+import { EditUserModal } from "./EditUserModal";
 
 export function UsersPage() {
   const { data, setUsers, isLoading, isError, limit, page, setPage, total, refetch } = useGetUsers(1, 10);
 
   const [editingUser, setEditingUser] = useState<UserDTO | null>(null);
   const [modalOpened, setModalOpened] = useState(false);
+  const [isFormLoading, setIsFormLoading] = useState(false);
 
   const {
-    control,
     handleSubmit,
+    control,
     reset,
     formState: { isSubmitting },
   } = useForm<UserFormInput>({
@@ -42,6 +39,18 @@ export function UsersPage() {
     try {
       setModalOpened(true);
       setEditingUser(user);
+      setIsFormLoading(true);
+
+      reset({
+        firstName: "",
+        lastName: "",
+        maidenName: "",
+        age: 0,
+        gender: "male",
+        username: "",
+        password: "",
+        birthDate: null,
+      });
 
       const fullUser = await getUserById(user.id);
 
@@ -57,6 +66,8 @@ export function UsersPage() {
       });
     } catch (e) {
       console.error(e);
+    } finally {
+      setIsFormLoading(false);
     }
   };
 
@@ -137,35 +148,15 @@ export function UsersPage() {
         />
       )}
 
-      <Modal
+      <EditUserModal
         opened={modalOpened}
         onClose={() => setModalOpened(false)}
-        title={
-          <Text fw={700} size='xl'>
-            Edit User
-          </Text>
-        }>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <TextInputField<UserFormInput> name='firstName' label='First name' control={control} />
-          <TextInputField<UserFormInput> name='lastName' label='Last name' control={control} />
-          <TextInputField<UserFormInput> name='maidenName' label='Maiden name' control={control} />
-
-          <NumberInputField<UserFormInput> name='age' label='Age' control={control} />
-
-          <SelectField<UserFormInput> name='gender' label='Gender' control={control} data={["male", "female"]} />
-
-          <TextInputField<UserFormInput> name='username' label='Username' control={control} />
-          <TextInputField<UserFormInput> name='password' label='Password' control={control} />
-
-          <DatePickerField<UserFormInput> name='birthDate' label='Birth date' control={control} />
-
-          <Group mt='md' style={{ justifyContent: "flex-end" }}>
-            <Button color='grape' type='submit' loading={isSubmitting}>
-              Save
-            </Button>
-          </Group>
-        </form>
-      </Modal>
+        control={control}
+        handleSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+        onSubmit={onSubmit}
+        isFormLoading={isFormLoading}
+      />
     </div>
   );
 }
